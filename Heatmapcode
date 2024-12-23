@@ -1,0 +1,26 @@
+data <- read.table(file="GSE62699_series_matrix.txt",row.names = 1,header = T, comment.char = "!")
+one <- data[,1]
+summary(one)
+boxplot(one)
+# obtain sample IDs in each group from GEO2R process
+AUD <- c("GSM1531616”, “GSM1531618”, “GSM1531620”, “GSM1531622”, “GSM1531624”, “GSM1531626”, “GSM1531628”, “GSM1531630”, “GSM1531632”, “GSM1531634”, “GSM1531636”, “GSM1531638”, “GSM1531640”, “GSM1531642”, “GSM1531644”, “GSM1531646”, “GSM1531648”, “GSM1531650")
+CTL <- c("GSM1531617”, “GSM1531619”, “GSM1531621”, “GSM1531623”, “GSM1531625”, “GSM1531627”, “GSM1531629”, “GSM1531631”, “GSM1531633”, “GSM1531635”, “GSM1531637”, “GSM1531639”, “GSM1531641”, “GSM1531643”, “GSM1531645”, “GSM1531647”, “GSM1531649”, “GSM1531651")
+# Combining both control and AUD
+data_CTL_AUD <- data[,c(CTL,AUD)]
+fulltopdiff <- read.table(file="GSE62699.top.table.tsv",header = T, sep = "\t", nrows=250) #top 250 genes
+selecteddata <- data_CTL_AUD[fulltopdiff$ID,]
+install.packages('pheatmap')
+library(pheatmap)
+pheatmap(selecteddata, scale="row", 
+         color=colorRampPalette(c("darkblue", "white", "red2"))(256),
+         border_color = NA,
+         show_rownames = F)
+# column id cluster
+group <- as.factor(c(rep("CTL",18),rep("MDD",18)))
+cid <- data.frame(group)
+row.names(cid)=colnames(data_CTL_AUD)
+pheatmap(selecteddata,scale="row", 
+         color=colorRampPalette(c("darkblue", "white", "red2"))(256),
+         border_color = NA,
+         show_rownames = F,
+         annotation_col = cid)
